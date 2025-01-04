@@ -4,7 +4,9 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { ConfigModule } from '@nestjs/config';
+import { AppDataSource } from './data-source';
 import * as path from 'path';
+import { ConfigService } from '@nestjs/config';
 @Module({
   imports: [
     UsersModule,
@@ -16,19 +18,10 @@ import * as path from 'path';
         process.env.NODE_ENV === 'test' ? 'test.env' : 'development.env',
       ),
     }),
-    TypeOrmModule.forRoot({
-      type: process.env.DATABASE_TYPE as
-        | 'postgres'
-        | 'mysql'
-        | 'mssql'
-        | 'sqlite',
-      host: process.env.DATABASE_HOST,
-      port: 5432,
-      username: process.env.DATABASE_USERNAME,
-      password: process.env.DATABASE_PASS,
-      database: process.env.DATABASE_NAME,
-      entities: [User],
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) =>
+        new AppDataSource(configService).createDataSource().options,
     }),
   ],
 })
