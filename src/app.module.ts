@@ -2,14 +2,16 @@ import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { logger } from './common/middleware/logger.middleware';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './users/entities/user.entity';
+
 import { ConfigModule } from '@nestjs/config';
 import { AppDataSource } from './data-source';
 import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
+import { StoriesModule } from './stories/stories.module';
 @Module({
   imports: [
     UsersModule,
+    StoriesModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: path.resolve(
