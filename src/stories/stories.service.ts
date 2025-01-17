@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { GeneratedText } from 'src/types';
+import { GeneratedStory } from 'src/types';
 @Injectable()
 export class OpenAIService {
   constructor(private configService: ConfigService) {}
@@ -51,13 +51,13 @@ export class OpenAIService {
 
       const tokenUsed = data.usage.total_tokens;
 
-      const toClient: GeneratedText = {
+      const createdStory: GeneratedStory = {
         englishStory,
         translatedStory,
         tokenUsed,
       };
 
-      return toClient;
+      return createdStory;
     } catch (error) {
       throw new Error('Error fetching data from OpenAI');
     }

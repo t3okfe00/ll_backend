@@ -1,4 +1,4 @@
-export interface GeneratedText {
+export interface GeneratedStory {
   englishStory: string;
   translatedStory: string;
   tokenUsed: Number;
@@ -14,4 +14,10 @@ export type GoogleCloudRequestObject = {
   audioConfig: {
     audioEncoding: 'MP3' | 'OGG_OPUS' | 'LINEAR16';
   };
+};
+
+export type SaveToBucketResponse = {
+  path: string;
+  id: string;
+  fullPath: string;
 };
