@@ -8,10 +8,12 @@ import { AppDataSource } from './data-source';
 import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
 import { StoriesModule } from './stories/stories.module';
+import { TextToSpeechModule } from './text-to-speech/textToSpeech.module';
 @Module({
   imports: [
     UsersModule,
     StoriesModule,
+    TextToSpeechModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: path.resolve(

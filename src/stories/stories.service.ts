@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GeneratedText } from 'src/types';
-ConfigService;
 @Injectable()
 export class OpenAIService {
   constructor(private configService: ConfigService) {}
@@ -60,7 +59,6 @@ export class OpenAIService {
 
       return toClient;
     } catch (error) {
-      console.log('Error fetching data from OpenAI', error);
       throw new Error('Error fetching data from OpenAI');
     }
   }

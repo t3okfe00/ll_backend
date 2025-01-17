@@ -3,3 +3,15 @@ export interface GeneratedText {
   translatedStory: string;
   tokenUsed: Number;
 }
+
+export type GoogleCloudRequestObject = {
+  input: { text: string };
+  voice: {
+    name: string;
+    languageCode: string;
+    ssmlGender: 'NEUTRAL' | 'MALE' | 'FEMALE';
+  };
+  audioConfig: {
+    audioEncoding: 'MP3' | 'OGG_OPUS' | 'LINEAR16';
+  };
+};
