@@ -9,7 +9,12 @@ export class TextToSpeechController {
   @Post()
   async generateSpeech(@Body() createTtsDto: CreateTtsDto) {
     let { text } = createTtsDto;
-    const textToSpeechLink = this.textToSpeechService.processTextToSpeech(text);
-    return textToSpeechLink;
+    const textToSpeechLink =
+      await this.textToSpeechService.processTextToSpeech(text);
+    return {
+      success: true,
+      url: textToSpeechLink,
+      message: 'Audio generated successfully',
+    };
   }
 }
