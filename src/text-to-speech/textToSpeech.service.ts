@@ -64,10 +64,18 @@ export class TextToSpeechService {
       audioConfig: { audioEncoding: 'MP3' },
     };
 
-    const response = await client.synthesizeSpeech(request);
-    const mp3content = response[0].audioContent;
+    try {
+      const response = await client.synthesizeSpeech(request);
+      const mp3content = response[0].audioContent;
 
-    return mp3content;
+      return mp3content;
+    } catch (error) {
+      console.error('Error in synthesizeSpeech', error);
+      throw new HttpException(
+        'Failed to synthesize speech',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   convertAudioToBuffer(audioContent: string) {

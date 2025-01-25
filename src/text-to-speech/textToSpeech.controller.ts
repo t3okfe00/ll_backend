@@ -1,5 +1,11 @@
 import { create } from 'domain';
-import { Controller, Body, Post } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Post,
+  HttpException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { TextToSpeechService } from './textToSpeech.service';
 import { CreateTtsDto } from './dto/create-speech-dto';
 @Controller('text-to-speech')
@@ -9,12 +15,18 @@ export class TextToSpeechController {
   @Post()
   async generateSpeech(@Body() createTtsDto: CreateTtsDto) {
     let { text } = createTtsDto;
-    const textToSpeechLink =
-      await this.textToSpeechService.processTextToSpeech(text);
-    return {
-      success: true,
-      url: textToSpeechLink,
-      message: 'Audio generated successfully',
-    };
+    try {
+      const textToSpeechLink =
+        await this.textToSpeechService.processTextToSpeech(text);
+      return {
+        success: true,
+        url: textToSpeechLink,
+        message: 'Audio generated successfully',
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        error.message || 'Failed to generate audio',
+      );
+    }
   }
 }
