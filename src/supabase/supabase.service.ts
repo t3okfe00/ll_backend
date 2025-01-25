@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { StorageError } from './../../node_modules/@supabase/storage-js/src/lib/errors';
 import { Injectable, Inject } from '@nestjs/common';
 import { SupabaseClient } from '@supabase/supabase-js';
@@ -7,12 +8,15 @@ import * as crypto from 'crypto';
 import { SaveToBucketResponse } from 'src/types';
 @Injectable()
 export class SupabaseService {
-  private textToSpeechBucketName = 'llearning_bucket';
+  private textToSpeechBucketName: string;
 
   constructor(
     @Inject('SUPABASE_CLIENT') private readonly supabaseClient: SupabaseClient,
     @Inject('S3_CLIENT') private readonly s3Client: S3Client,
-  ) {}
+    private ConfigService: ConfigService,
+  ) {
+    this.textToSpeechBucketName = this.ConfigService.get('S3_BUCKET_NAME');
+  }
 
   async saveFileToS3Bucket(
     fileName: string,
@@ -25,8 +29,9 @@ export class SupabaseService {
       });
 
     if (error) {
+      console.log('Error,', error);
       throw new HttpException(
-        'Failed to save file to S3 bucket',
+        `Failed to save file to S3 bucket-${error.message}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
