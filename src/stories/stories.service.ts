@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GeneratedStory } from 'src/types';
 @Injectable()
@@ -32,9 +32,9 @@ export class OpenAIService {
         headers: headers,
         body: JSON.stringify(body),
       });
-      if (response.status !== 200) {
-        throw new Error('Error fetching data from OpenAI');
-      }
+      // if (response.status !== 200) {
+      //   throw new Error('Error fetching data from OpenAI');
+      // }
       const data = await response.json();
 
       const openai_response_stroy = data.choices[0].message.content;
@@ -59,7 +59,7 @@ export class OpenAIService {
 
       return createdStory;
     } catch (error) {
-      throw new Error('Error fetching data from OpenAI');
+      throw new InternalServerErrorException('Error fetching data from OpenAI');
     }
   }
 

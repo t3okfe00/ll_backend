@@ -1,4 +1,10 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  InternalServerErrorException,
+  Post,
+} from '@nestjs/common';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { OpenAIService } from './stories.service';
 import { create } from 'domain';
@@ -10,8 +16,17 @@ export class StoriesController {
   @Post()
   async generateStory(@Body() createStoryDto: CreateStoryDto) {
     const { prompt, translateTo } = createStoryDto;
-    let response = await this.openAIService.generateStory(prompt, translateTo);
-    console.log('Response for the Request', response);
-    return response;
+    try {
+      let response = await this.openAIService.generateStory(
+        prompt,
+        translateTo,
+      );
+      console.log('Response for the Request', response);
+      return response;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'An error occurred while generating the story',
+      );
+    }
   }
 }
