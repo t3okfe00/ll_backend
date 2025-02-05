@@ -10,6 +10,7 @@ import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
 import { StoriesModule } from './stories/stories.module';
 import { TextToSpeechModule } from './text-to-speech/textToSpeech.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     UsersModule,
@@ -28,6 +29,7 @@ import { TextToSpeechModule } from './text-to-speech/textToSpeech.module';
       useFactory: (configService: ConfigService) =>
         new AppDataSource(configService).createDataSource().options,
     }),
+    AuthModule,
   ],
 })
 export class AppModule implements NestModule {
