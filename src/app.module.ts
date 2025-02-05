@@ -1,5 +1,6 @@
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
-import { logger } from './common/middleware/logger.middleware';
+
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -34,6 +35,6 @@ export class AppModule implements NestModule {
     console.log(process.env.NODE_ENV, ' database is initialized.');
   }
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(logger);
+    consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }

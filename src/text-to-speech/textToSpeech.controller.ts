@@ -14,7 +14,6 @@ export class TextToSpeechController {
 
   @Post()
   async generateSpeech(@Body() createTtsDto: CreateTtsDto) {
-    console.log('Request?');
     let { text } = createTtsDto;
     try {
       const textToSpeechLink =

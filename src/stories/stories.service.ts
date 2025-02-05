@@ -1,6 +1,13 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
 import { GeneratedStory } from 'src/types';
+import { ResponseStoryDto } from './dto/response-story.dto';
 @Injectable()
 export class OpenAIService {
   constructor(private configService: ConfigService) {}
@@ -32,9 +39,7 @@ export class OpenAIService {
         headers: headers,
         body: JSON.stringify(body),
       });
-      // if (response.status !== 200) {
-      //   throw new Error('Error fetching data from OpenAI');
-      // }
+
       const data = await response.json();
 
       const openai_response_stroy = data.choices[0].message.content;
@@ -57,7 +62,7 @@ export class OpenAIService {
         tokenUsed,
       };
 
-      return createdStory;
+      return await this.validateResponse(createdStory);
     } catch (error) {
       throw new InternalServerErrorException('Error fetching data from OpenAI');
     }
@@ -81,5 +86,16 @@ export class OpenAIService {
 
   getOpenAITextGenerationBaseUrl(): string {
     return this.configService.get<string>('OPEN_AI_TEXT_GENERATION_BASE_URL');
+  }
+
+  private async validateResponse(response: GeneratedStory) {
+    const responseDto = plainToInstance(ResponseStoryDto, response);
+    console.log('Response for the Request', response);
+    const errors = await validate(responseDto);
+    console.log('Errors', errors);
+    if (errors.length > 0) {
+      throw new BadRequestException('Invalid response from OpenAI service');
+    }
+    return response;
   }
 }
