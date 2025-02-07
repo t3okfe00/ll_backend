@@ -11,11 +11,11 @@ export class SupabaseService {
   private textToSpeechBucketName: string;
 
   constructor(
+    private configService: ConfigService,
     @Inject('SUPABASE_CLIENT') private readonly supabaseClient: SupabaseClient,
     @Inject('S3_CLIENT') private readonly s3Client: S3Client,
-    private ConfigService: ConfigService,
   ) {
-    this.textToSpeechBucketName = this.ConfigService.get('S3_BUCKET_NAME');
+    this.textToSpeechBucketName = this.configService.get('S3_BUCKET_NAME');
   }
 
   async saveFileToS3Bucket(

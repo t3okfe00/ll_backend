@@ -12,6 +12,7 @@ import { S3Client } from '@aws-sdk/client-s3';
       useFactory: (configService: ConfigService) => {
         const supabaseUrl = configService.get<string>('SUPABASE_URL');
         const supabaseKey = configService.get<string>('SUPABASE_KEY');
+        console.log('Creating Supabase client', supabaseUrl, supabaseKey);
         return createClient(supabaseUrl, supabaseKey);
       },
       inject: [ConfigService],

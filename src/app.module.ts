@@ -11,28 +11,44 @@ import { ConfigService } from '@nestjs/config';
 import { StoriesModule } from './stories/stories.module';
 import { TextToSpeechModule } from './text-to-speech/textToSpeech.module';
 import { AuthModule } from './auth/auth.module';
+import { SupabaseModule } from './supabase/supabase.module';
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [
+        path.join(
+          process.cwd(),
+          'env',
+          process.env.NODE_ENV === 'test' ? 'test.env' : 'development.env',
+        ),
+        path.join(process.cwd(), '.env'), // Fallback
+      ],
+    }),
     UsersModule,
     StoriesModule,
     TextToSpeechModule,
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: path.resolve(
-        __dirname,
-        '../env',
-        process.env.NODE_ENV === 'test' ? 'test.env' : 'development.env',
-      ),
-    }),
+
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) =>
         new AppDataSource(configService).createDataSource().options,
     }),
     AuthModule,
+    SupabaseModule,
   ],
 })
 export class AppModule implements NestModule {
+  constructor(private configService: ConfigService) {
+    console.log(
+      'Resolved ENV file path:',
+      path.resolve(
+        __dirname,
+        '../env',
+        process.env.NODE_ENV === 'test' ? 'test.env' : 'development.env',
+      ),
+    );
+  }
   onModuleInit() {
     console.log(process.env.NODE_ENV, ' database is initialized.');
   }

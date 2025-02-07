@@ -90,9 +90,7 @@ export class OpenAIService {
 
   private async validateResponse(response: GeneratedStory) {
     const responseDto = plainToInstance(ResponseStoryDto, response);
-    console.log('Response for the Request', response);
     const errors = await validate(responseDto);
-    console.log('Errors', errors);
     if (errors.length > 0) {
       throw new BadRequestException('Invalid response from OpenAI service');
     }
