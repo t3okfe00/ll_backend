@@ -93,4 +93,22 @@ export class SupabaseService {
       );
     }
   }
+
+  async getUserByEmail(email: string) {
+    const { data, error } = await this.supabaseClient
+      .from('users') // Replace with your actual table name
+      .select('*')
+      .eq('email', email)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        throw new Error('User not found');
+      }
+      // Other errors (e.g., connection issues)
+      throw new Error(`Error fetching user: ${error.message}`);
+    }
+
+    return data;
+  }
 }

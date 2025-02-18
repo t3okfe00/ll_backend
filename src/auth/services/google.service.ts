@@ -10,8 +10,6 @@ export class GoogleAuthService {
     this.oAuth2Client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
   }
   async verifyGoogleToken(token: string): Promise<any> {
-    console.log('Verifying Google token:', token);
-
     try {
       const ticket = await this.oAuth2Client.verifyIdToken({
         idToken: token,
