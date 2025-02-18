@@ -21,3 +21,15 @@ export type SaveToBucketResponse = {
   id: string;
   fullPath: string;
 };
+
+export type User = {
+  id: string;
+  created_at: string;
+  token: number;
+  email: string;
+  daily_free_translations: number;
+  last_translation_reset: string;
+  paid_tokens: number;
+  total_tokens: number;
+  num_stories: number;
+};

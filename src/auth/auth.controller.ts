@@ -12,11 +12,8 @@ export class AuthController {
     const { token } = googleLoginDto;
 
     try {
-      const googleVerification = await this.authService.googleLogin(token);
-
-      return true;
+      return await this.authService.googleLogin(token);
     } catch (error) {
-      console.log('Error is here', error);
       throw new HttpException(error.message, 401);
     }
   }
