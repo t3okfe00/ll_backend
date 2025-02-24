@@ -1,6 +1,6 @@
 # NestJS REST API for language learning app 
 Initially, I developed [TwinTongues](https://youtu.be/R3MYzJaM3Jg) using NextJS & Javascript.
-Howeveri I decided to rebuild the backend using NestJS & TS to better support a mobile app and future features.
+However, I decided to rebuild the backend using NestJS & TS to better support a mobile app and future features.
 
 This repository is the backend for React-Native & NextJS language learning app 
 that provides three key features:
