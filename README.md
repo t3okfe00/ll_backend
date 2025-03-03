@@ -13,3 +13,5 @@ Backend:
 * Converts text into speech using Google Cloud TTS, stores the generated audio in an S3 bucket (supabase) and returns a signed URL for access.
 * Translates words using DeepL
 * Authentication with google and JWT (in progress)
+
+* ![Alt text](/ttss.png)
