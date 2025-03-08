@@ -6,6 +6,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { HttpStatus, HttpException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { SaveToBucketResponse } from 'src/types';
+import { v4 as uuidv4 } from 'uuid';
 @Injectable()
 export class SupabaseService {
   private textToSpeechBucketName: string;
@@ -102,13 +103,29 @@ export class SupabaseService {
       .single();
 
     if (error) {
-      if (error.code === 'PGRST116') {
-        throw new Error('User not found');
-      }
+      return null;
       // Other errors (e.g., connection issues)
-      throw new Error(`Error fetching user: ${error.message}`);
     }
 
     return data;
+  }
+
+  async createUser(email: string) {
+    const id = uuidv4();
+    console.log('ID', id);
+    const { data, error } = await this.supabaseClient
+      .from('users')
+      .insert({
+        id: id,
+        token: 5000,
+        email: email,
+        daily_free_translations: 50,
+      })
+      .select();
+
+    if (error) {
+      throw new Error('Error creating user');
+    }
+    return data[0];
   }
 }

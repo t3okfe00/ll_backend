@@ -3,13 +3,12 @@ import {
   Controller,
   InternalServerErrorException,
   Post,
-  UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateStoryDto } from './dto/create-story.dto';
 import { OpenAIService } from './stories.service';
 
-@UseGuards(AuthGuard)
+//@UseGuards(AuthGuard)
 @Controller('story')
 export class StoriesController {
   constructor(private readonly openAIService: OpenAIService) {}

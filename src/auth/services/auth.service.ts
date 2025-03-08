@@ -18,15 +18,28 @@ export class AuthService {
     try {
       const googlePayload =
         await this.googleAuthService.verifyGoogleToken(token);
-      const user: User = await this.supabaseService.getUserByEmail(
+
+      let user: User = await this.supabaseService.getUserByEmail(
         googlePayload.email,
       );
 
       // If user does not exist
       if (!user) {
+        try {
+          const newUser = await this.supabaseService.createUser(
+            googlePayload.email,
+          );
+          if (newUser) user = newUser;
+
+          console.log('New User', newUser);
+        } catch (error) {
+          throw new Error(error);
+        }
       }
-      // Create JWT token
+
+      // Sign JWT token
       const JwtPayload = { userId: user.id, email: user.email };
+
       const jwtToken = await this.jwtService.signAsync(JwtPayload);
 
       return { accessToken: jwtToken, userEmail: user.email };
