@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from './../../../node_modules/@types/jsonwebtoken/index.d';
 import { SupabaseService } from 'src/supabase/supabase.service';
 import { Injectable } from '@nestjs/common';
@@ -11,6 +12,7 @@ export class AuthService {
     private readonly googleAuthService: GoogleAuthService,
     private readonly supabaseService: SupabaseService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   async googleLogin(token: string): Promise<any> {
@@ -30,19 +32,29 @@ export class AuthService {
             googlePayload.email,
           );
           if (newUser) user = newUser;
-
-          console.log('New User', newUser);
         } catch (error) {
           throw new Error(error);
         }
       }
 
       // Sign JWT token
-      const JwtPayload = { userId: user.id, email: user.email };
+      const accessTokenPayload = { userId: user.id, email: user.email };
+      const refreshTokenPayload = { userId: user.id, email: user.email };
 
-      const jwtToken = await this.jwtService.signAsync(JwtPayload);
+      const accessToken = await this.jwtService.signAsync(accessTokenPayload);
+      const refreshToken = await this.jwtService.signAsync(
+        refreshTokenPayload,
+        {
+          secret: this.configService.get<string>('REFRESH_TOKEN_SECRET'),
+          expiresIn: '30d',
+        },
+      );
 
-      return { accessToken: jwtToken, userEmail: user.email };
+      return {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        userEmail: user.email,
+      };
     } catch (error) {
       throw new Error(error.message);
     }

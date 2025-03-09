@@ -120,6 +120,7 @@ export class SupabaseService {
         token: 5000,
         email: email,
         daily_free_translations: 50,
+        daily_tts: 15,
       })
       .select();
 
