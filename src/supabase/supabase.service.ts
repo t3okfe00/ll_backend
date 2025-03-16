@@ -129,4 +129,65 @@ export class SupabaseService {
     }
     return data[0];
   }
+
+  async getUserTokens(userId: string): Promise<number> {
+    const { data: user, error } = await this.supabaseClient
+      .from('users')
+      .select('token')
+      .eq('id', userId)
+      .single();
+
+    if (error || !user) {
+      return null;
+    }
+
+    return user.token;
+  }
+
+  async deductTokens(userId: string, tokensToDeduct: number) {
+    const { data, error } = await this.supabaseClient
+      .from('users')
+      .select('token')
+      .eq('id', userId)
+      .single();
+
+    if (error || !data) {
+      throw new Error('User not found');
+    }
+
+    if (data.token < tokensToDeduct) {
+      throw new Error('Not enough tokens');
+    }
+
+    const newTokenBalance = data.token - tokensToDeduct;
+
+    const { error: updateError } = await this.supabaseClient
+      .from('users')
+      .update({ token: newTokenBalance })
+      .eq('id', userId);
+
+    if (updateError) {
+      throw new Error('Error deducting tokens');
+    }
+
+    return newTokenBalance;
+  }
+
+  async deductTtsQuota(userId: string): Promise<any> {
+    const { data: remaining_tts, error } = await this.supabaseClient.rpc(
+      'decrement_daily_tts',
+      {
+        user_id: userId,
+      },
+    );
+
+    if (error) {
+      throw new HttpException(
+        `Error deducting TTS quota: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return remaining_tts;
+  }
 }

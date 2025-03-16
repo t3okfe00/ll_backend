@@ -16,7 +16,6 @@ export class AuthService {
   ) {}
 
   async googleLogin(token: string): Promise<any> {
-    // Verify google token may fail
     try {
       const googlePayload =
         await this.googleAuthService.verifyGoogleToken(token);

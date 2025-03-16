@@ -2,6 +2,7 @@ export interface GeneratedStory {
   englishStory: string;
   translatedStory: string;
   tokenUsed: Number;
+  remainingTokens: Number;
 }
 
 export type GoogleCloudRequestObject = {
@@ -32,4 +33,5 @@ export type User = {
   paid_tokens: number;
   total_tokens: number;
   num_stories: number;
+  daily_tts: number;
 };

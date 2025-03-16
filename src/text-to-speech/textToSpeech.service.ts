@@ -1,6 +1,10 @@
 import { ConfigService } from '@nestjs/config';
-import { Inject, Injectable } from '@nestjs/common';
-import { GoogleCloudRequestObject, SaveToBucketResponse } from 'src/types';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  GoogleCloudRequestObject,
+  SaveToBucketResponse,
+  User,
+} from 'src/types';
 import { SupabaseService } from 'src/supabase/supabase.service';
 import { HttpException, HttpStatus } from '@nestjs/common';
 var langdetect = require('langdetect');
@@ -21,7 +25,16 @@ export class TextToSpeechService {
   };
   constructor(private supabaseService: SupabaseService) {}
 
-  async processTextToSpeech(text: string) {
+  async processTextToSpeech(userId: string, userEmail: string, text: string) {
+    const user: User = await this.supabaseService.getUserByEmail(userEmail);
+
+    if (!user || user.daily_tts <= 0) {
+      throw new HttpException(
+        'You have reached your daily limit for Text-to-Speech.',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
     try {
       let audioBuffer: Buffer = null;
       const audioContent = await this.synthesizeSpeech(text);
@@ -38,8 +51,10 @@ export class TextToSpeechService {
         );
       }
 
+      const remaining_daily_tts =
+        await this.supabaseService.deductTtsQuota(userId);
       const url = await this.supabaseService.createSignedUrl(uniqueFileName);
-      return url;
+      return [remaining_daily_tts, url];
     } catch (error) {
       if (error instanceof HttpException) {
         throw new HttpException(error.message, error.getStatus());
@@ -63,6 +78,7 @@ export class TextToSpeechService {
       },
       audioConfig: { audioEncoding: 'MP3' },
     };
+    console.log('**** REQUEST TO GOOGLE CLOUD ****');
 
     try {
       const response = await client.synthesizeSpeech(request);

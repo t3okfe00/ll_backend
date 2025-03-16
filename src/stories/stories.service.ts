@@ -8,13 +8,27 @@ import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { GeneratedStory } from 'src/types';
 import { ResponseStoryDto } from './dto/response-story.dto';
+import { SupabaseService } from 'src/supabase/supabase.service';
 @Injectable()
 export class OpenAIService {
-  constructor(private configService: ConfigService) {}
-  async generateStory(prompt: string, translateTo: string) {
+  constructor(
+    private configService: ConfigService,
+    private supabaseService: SupabaseService,
+  ) {}
+  async generateStory(userId: string, prompt: string, translateTo: string) {
     let apikey = this.getOpenAIKey();
-
     const url = this.getOpenAITextGenerationBaseUrl();
+    const estimatedCost = 5;
+
+    const userTokens = await this.supabaseService.getUserTokens(userId);
+    if (!userTokens) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (userTokens < estimatedCost) {
+      throw new BadRequestException('Insufficient tokens to generate story');
+    }
+    console.log('******Making request to OpenAI******');
 
     const headers = {
       'Content-Type': 'application/json',
@@ -56,10 +70,21 @@ export class OpenAIService {
 
       const tokenUsed = data.usage.total_tokens;
 
+      let remainingTokens = null;
+      try {
+        remainingTokens = await this.supabaseService.deductTokens(
+          userId,
+          tokenUsed,
+        );
+      } catch (error) {
+        throw new InternalServerErrorException('Error deducting tokens');
+      }
+
       const createdStory: GeneratedStory = {
         englishStory,
         translatedStory,
         tokenUsed,
+        remainingTokens,
       };
 
       return await this.validateResponse(createdStory);
