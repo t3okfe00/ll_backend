@@ -2,8 +2,18 @@
 import { DataSource } from 'typeorm';
 import { User } from './users/entities/user.entity';
 import * as dotenv from 'dotenv';
+import * as fs from 'fs';
 
-dotenv.config({ path: `env/${process.env.NODE_ENV || 'development'}.env` });
+if (process.env.RENDER !== 'true') {
+  // Only load the .env file if running locally
+  const envPath = `env/${process.env.NODE_ENV || 'development'}.env`;
+  console.log('envPath Exists', envPath);
+  if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath });
+  }
+}
+
+//dotenv.config({ path: `env/${process.env.NODE_ENV || 'development'}.env` });
 
 export const AppDataSource = new DataSource({
   type: process.env.DATABASE_TYPE as 'postgres' | 'mysql' | 'mssql' | 'sqlite',
