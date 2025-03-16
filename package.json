@@ -8,7 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
+    "start": "cross-env NODE_ENV=development nest start",
     "migration:generate": "cross-env NODE_ENV=%npm_config_env% npx typeorm-ts-node-commonjs migration:generate -d src/data-source.cli.ts ./migrations/%npm_config_name%",
     "migration:run": "cross-env NODE_ENV=%npm_config_env% npx typeorm-ts-node-commonjs migration:run -d src/data-source.cli.ts",
     "start:dev": "cross-env NODE_ENV=development nest start --watch",

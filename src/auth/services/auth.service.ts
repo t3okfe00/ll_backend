@@ -1,5 +1,4 @@
 import { ConfigService } from '@nestjs/config';
-import { JwtPayload } from './../../../node_modules/@types/jsonwebtoken/index.d';
 import { SupabaseService } from 'src/supabase/supabase.service';
 import { Injectable } from '@nestjs/common';
 import { GoogleAuthService } from './google.service';
@@ -35,6 +34,7 @@ export class AuthService {
           throw new Error(error);
         }
       }
+      console.log('USER @ login -> ', user);
 
       // Sign JWT token
       const accessTokenPayload = { userId: user.id, email: user.email };
